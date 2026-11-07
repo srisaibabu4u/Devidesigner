@@ -70,6 +70,7 @@ export default function CustomerAuth({ mode = "login" }) {
           <p className="auth__switch">
             {isRegister ? <>Already a member? <Link to="/login" state={loc.state}>Sign in</Link></> : <>New to Devi? <Link to="/register" state={loc.state}>Create an account</Link></>}
           </p>
+          <p className="auth__admin">Store owner? <Link to="/atelier">Atelier (admin) sign in →</Link></p>
         </form>
       </div>
     </section>

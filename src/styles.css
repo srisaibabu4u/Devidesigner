@@ -472,3 +472,6 @@ select { border: 1px solid var(--line); background: var(--paper); padding: .55re
 .lfield__box input { min-width: 0; }
 @media (max-width: 960px) { .auth__card { justify-self: stretch; max-width: none; } }
 @media (max-width: 640px) { .auth__wrap { width: calc(100% - 2rem); } }
+.auth__admin { text-align: center; margin: 1.2rem 0 0; padding-top: 1rem; border-top: 1px solid rgba(198,160,82,.15); font-size: .78rem; color: #8a7f6c; }
+.auth__admin a { color: #b8a986; }
+.auth__admin a:hover { color: var(--gold-soft); }
