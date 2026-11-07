@@ -29,3 +29,6 @@ export const Ornament = ({ className = "" }) => (
     <circle cx="100" cy="12" r="1.4" fill="currentColor" /><circle cx="140" cy="12" r="1.4" fill="currentColor" />
   </svg>
 );
+export const Heart = ({ filled, ...p }) => (
+  <I {...p}><path d="M12 20s-7.5-4.6-9.2-9.4C1.7 7.5 3.8 4.5 7 4.5c2 0 3.6 1.1 5 3 1.4-1.9 3-3 5-3 3.2 0 5.3 3 4.2 6.1C19.5 15.4 12 20 12 20z" fill={filled ? "currentColor" : "none"} /></I>
+);

@@ -7,7 +7,13 @@ An elegant e-commerce boutique for fashion jewellery for women and men, built wi
 - **Upload a folder**: in the admin, choose (or drag in) a folder of photos and every photo becomes a product. Images are resized in the browser and stored in Netlify Blobs.
 - **Edit each item**: name, category, Women/Men/Unisex, price, compare-at price, stock, material, SKU and description. You can add, remove or reorder photos, show or hide a piece, and feature it on the home page. Bulk delete is supported.
 - **Orders**: checkout orders show up in the admin with status tracking (New → Confirmed → Shipped → Delivered).
-- **Secure login**: username + password with a show/hide 👁 toggle. Sessions are HMAC-signed tokens that last 12 hours, and the password is never stored in the code.
+- **Open browsing**: anyone can browse, search and buy without an account (guest checkout).
+- **Customer accounts** (`/login`, `/register`): sign up or sign in with email + password (with a show/hide 👁 toggle). Members get:
+  - **My Orders**: order history with live status
+  - **Wishlist**: tap ♡ on any piece; guest favourites carry over when you sign in
+  - **Profile**: saved phone and address that pre-fill checkout, plus password change
+  - Passwords are hashed with scrypt; sessions last 30 days.
+- **Admin login** (`/atelier`): a separate username + password with the 👁 toggle. Sessions last 12 hours, the password is never stored in the code, and customer logins can never access admin features.
 
 ## Folder upload conventions (all optional — you can edit everything before publishing)
 ```
@@ -32,7 +38,7 @@ Devi Collection/
    | `VITE_WHATSAPP_NUMBER` *(optional)* | e.g. `919876543210` (adds an "Enquire on WhatsApp" button) |
    | `VITE_CURRENCY` *(optional)* | defaults to `INR` |
 3. Deploy. Each push to `main` then deploys to production automatically, and each pull request gets a Deploy Preview. GitHub Actions (`.github/workflows/ci.yml`) also checks that every push builds.
-4. Go to `/login` on your site, sign in, then open **Upload folder**.
+4. Go to `/atelier` on your site, sign in as admin, then open **Upload folder**. Customers sign up at `/register`.
 
 ## Local development
 ```bash

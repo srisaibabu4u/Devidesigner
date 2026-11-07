@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useAccount } from "../lib/account.jsx";
 import { Link } from "react-router-dom";
 import { useCart } from "../lib/cart.jsx";
 import { api } from "../lib/api.js";
@@ -8,16 +9,22 @@ import { ProductImage } from "../components/ProductCard.jsx";
 
 export default function Checkout() {
   const { items, total, clear } = useCart();
+  const { user, update } = useAccount();
   const [form, setForm] = useState({ name: "", phone: "", email: "", address: "", note: "" });
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
   const [done, setDone] = useState(null);
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
+  const [saveAddr, setSaveAddr] = useState(true);
+  useEffect(() => {
+    if (user) setForm((cur) => ({ ...cur, name: cur.name || user.name, email: cur.email || user.email, phone: cur.phone || user.phone, address: cur.address || user.address }));
+  }, [user]);
 
   const submit = async (e) => {
     e.preventDefault(); setErr(""); setBusy(true);
     try {
       const res = await api.placeOrder({ customer: form, items: items.map((i) => ({ id: i.id, qty: i.qty })) });
+      if (user && saveAddr && (form.address !== user.address || form.phone !== user.phone)) update({ address: form.address, phone: form.phone }).catch(() => {});
       setDone(res); clear();
     } catch (e2) { setErr(e2.message); } finally { setBusy(false); }
   };
@@ -28,6 +35,7 @@ export default function Checkout() {
       <h1>Your order is placed</h1><Ornament />
       <p>Order reference <strong>{done.id}</strong> · {money(done.total)}</p>
       <p className="muted">Our atelier will contact you shortly to confirm payment and delivery.</p>
+      {user ? <p><Link to="/account" className="text-link">Track this order in My Account</Link></p> : <p className="muted small"><Link to="/register" className="text-link">Create an account</Link> to track future orders.</p>}
       <Link to="/shop" className="btn btn--dark">Continue shopping</Link>
     </section>
   );
@@ -40,6 +48,7 @@ export default function Checkout() {
     <section className="container checkout">
       <form className="checkout__form panel" onSubmit={submit}>
         <h2>Delivery details</h2>
+        {!user && <p className="checkout__hint">Have an account? <Link to="/login" state={{ from: "/checkout" }}>Sign in</Link> for faster checkout and order tracking — or continue as a guest.</p>}
         <div className="field-row">
           <label className="field"><span>Full name *</span><input required value={form.name} onChange={set("name")} /></label>
           <label className="field"><span>Phone *</span><input required type="tel" value={form.phone} onChange={set("phone")} /></label>
@@ -47,6 +56,7 @@ export default function Checkout() {
         <label className="field"><span>Email</span><input type="email" value={form.email} onChange={set("email")} /></label>
         <label className="field"><span>Delivery address *</span><textarea required rows={3} value={form.address} onChange={set("address")} /></label>
         <label className="field"><span>Note for our atelier</span><textarea rows={2} value={form.note} onChange={set("note")} placeholder="Gift message, sizing, occasion…" /></label>
+        {user && <label className="checks"><span><input type="checkbox" checked={saveAddr} onChange={(e) => setSaveAddr(e.target.checked)} /> Save these details to my account</span></label>}
         {err && <p className="error">{err}</p>}
         <button className="btn btn--gold btn--block" disabled={busy}>{busy ? "Placing order…" : `Place order · ${money(total)}`}</button>
         <p className="muted small">Payment is confirmed personally by our team after you place the order.</p>

@@ -1,4 +1,4 @@
-import { json, isAuthed, unauthorized, catalogStore, newId, readProducts } from "../lib/util.js";
+import { json, isAuthed, unauthorized, catalogStore, newId, readProducts, customerSession } from "../lib/util.js";
 
 const s = (v, n = 300) => (v == null ? "" : String(v).slice(0, n).trim());
 
@@ -24,6 +24,7 @@ export default async (req, context) => {
       items,
       total: items.reduce((t, i) => t + i.price * i.qty, 0),
       status: "New",
+      customerEmail: customerSession(req)?.sub || "",
       createdAt: new Date().toISOString(),
     };
     await store.setJSON("orders.json", [order, ...orders]);

@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { money } from "../lib/format.js";
-import { Diamond } from "./Icons.jsx";
+import { Diamond, Heart } from "./Icons.jsx";
+import { useAccount } from "../lib/account.jsx";
 
 export function ProductImage({ src, alt, className = "" }) {
   return src ? (
@@ -12,6 +13,8 @@ export function ProductImage({ src, alt, className = "" }) {
 
 export default function ProductCard({ p }) {
   const sale = p.comparePrice > p.price;
+  const { isWished, toggleWish } = useAccount();
+  const wished = isWished(p.id);
   return (
     <Link to={`/product/${p.id}`} className="card">
       <div className="card__media">
@@ -19,6 +22,10 @@ export default function ProductCard({ p }) {
         {p.images?.[1] && <img className="card__img card__img--alt" src={p.images[1]} alt="" loading="lazy" />}
         {sale && <span className="tag">Special</span>}
         {p.stock === 0 && <span className="tag tag--muted">Sold out</span>}
+        <button className={`wish ${wished ? "wish--on" : ""}`} aria-label={wished ? "Remove from wishlist" : "Save to wishlist"} aria-pressed={wished}
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleWish(p.id); }}>
+          <Heart size={18} filled={wished} />
+        </button>
         <span className="card__cta">View piece</span>
       </div>
       <div className="card__body">

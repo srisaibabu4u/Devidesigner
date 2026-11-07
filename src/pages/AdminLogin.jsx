@@ -4,7 +4,7 @@ import { api } from "../lib/api.js";
 import Logo from "../components/Logo.jsx";
 import { Eye, EyeOff, Lock, User, Ornament } from "../components/Icons.jsx";
 
-export default function Login() {
+export default function AdminLogin() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [show, setShow] = useState(false);

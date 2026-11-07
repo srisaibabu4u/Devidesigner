@@ -18,7 +18,7 @@ export default function Footer() {
           </div>
           <div>
             <h4>House</h4>
-            <Link to="/about">Our Story</Link><Link to="/checkout">Your Bag</Link><Link to="/login">Atelier Login</Link>
+            <Link to="/about">Our Story</Link><Link to="/checkout">Your Bag</Link><Link to="/account">My Account</Link><Link to="/atelier">Atelier Login</Link>
           </div>
           <div>
             <h4>Promise</h4>

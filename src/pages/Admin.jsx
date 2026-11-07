@@ -22,7 +22,7 @@ export default function Admin() {
   };
   useEffect(() => { load(); }, []);
 
-  const signOut = () => { logout(); nav("/login"); };
+  const signOut = () => { logout(); nav("/atelier"); };
 
   return (
     <section className="admin container">

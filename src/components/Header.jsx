@@ -1,12 +1,13 @@
 import { NavLink, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Logo from "./Logo.jsx";
-import { Bag, Menu, Close, User } from "./Icons.jsx";
+import { Bag, Menu, Close, User, Heart } from "./Icons.jsx";
 import { useCart } from "../lib/cart.jsx";
-import { isLoggedIn } from "../lib/api.js";
+import { useAccount } from "../lib/account.jsx";
 
 export default function Header() {
   const { count, setOpen } = useCart();
+  const { user, wishlist } = useAccount();
   const [scrolled, setScrolled] = useState(false);
   const [nav, setNav] = useState(false);
   useEffect(() => {
@@ -28,10 +29,16 @@ export default function Header() {
             <NavLink to="/men">Men</NavLink>
             <NavLink to="/shop">All Jewellery</NavLink>
             <NavLink to="/about">Our Story</NavLink>
+            <NavLink to={user ? "/account" : "/login"} className="nav__account">{user ? "My Account" : "Sign in / Register"}</NavLink>
           </nav>
           <Logo />
           <div className="header__actions">
-            <Link to={isLoggedIn() ? "/admin" : "/login"} className="icon-btn" aria-label="Account"><User /></Link>
+            <Link to={user ? "/account" : "/login"} className="icon-btn account-btn" aria-label={user ? "My account" : "Sign in"}>
+              <User />{user && <span className="account-btn__name">{user.name.split(" ")[0]}</span>}
+            </Link>
+            <Link to={user ? "/account/wishlist" : "/login"} state={user ? undefined : { from: "/account/wishlist" }} className="icon-btn bag-btn" aria-label="Wishlist">
+              <Heart />{wishlist.length > 0 && <span className="bag-count">{wishlist.length}</span>}
+            </Link>
             <button className="icon-btn bag-btn" onClick={() => setOpen(true)} aria-label="Open bag">
               <Bag />{count > 0 && <span className="bag-count">{count}</span>}
             </button>

@@ -5,14 +5,15 @@ const TOKEN_TTL_MS = 1000 * 60 * 60 * 12; // 12 hours
 
 export const catalogStore = () => getStore({ name: "catalog", consistency: "strong" });
 export const imageStore = () => getStore({ name: "images", consistency: "strong" });
+export const customerStore = () => getStore({ name: "customers", consistency: "strong" });
 
 const secret = () =>
   process.env.AUTH_SECRET || `${process.env.ADMIN_PASSWORD || ""}::devi-designer-beads`;
 
 const b64url = (buf) => Buffer.from(buf).toString("base64url");
 
-export function signToken(payload) {
-  const body = b64url(JSON.stringify({ ...payload, exp: Date.now() + TOKEN_TTL_MS }));
+export function signToken(payload, ttl = TOKEN_TTL_MS) {
+  const body = b64url(JSON.stringify({ ...payload, exp: Date.now() + ttl }));
   const sig = crypto.createHmac("sha256", secret()).update(body).digest("base64url");
   return `${body}.${sig}`;
 }
@@ -39,10 +40,37 @@ export function safeEqual(a = "", b = "") {
   return crypto.timingSafeEqual(ha, hb);
 }
 
-export function isAuthed(req) {
+export function getSession(req) {
   const h = req.headers.get("authorization") || "";
   const token = h.startsWith("Bearer ") ? h.slice(7) : "";
-  return Boolean(verifyToken(token));
+  return verifyToken(token);
+}
+
+// Admin-only check — customer sessions never pass this.
+export function isAuthed(req) {
+  return getSession(req)?.role === "admin";
+}
+
+export function customerSession(req) {
+  const s = getSession(req);
+  return s?.role === "customer" && s.sub ? s : null;
+}
+
+export const emailKey = (email) =>
+  "u/" + crypto.createHash("sha256").update(String(email).trim().toLowerCase()).digest("hex");
+
+export function hashPassword(password) {
+  const salt = crypto.randomBytes(16).toString("hex");
+  const hash = crypto.scryptSync(String(password), salt, 64).toString("hex");
+  return `${salt}:${hash}`;
+}
+
+export function verifyPassword(password, stored = "") {
+  const [salt, hash] = stored.split(":");
+  if (!salt || !hash) return false;
+  const test = crypto.scryptSync(String(password), salt, 64);
+  const known = Buffer.from(hash, "hex");
+  return known.length === test.length && crypto.timingSafeEqual(known, test);
 }
 
 export const json = (data, status = 200, headers = {}) =>

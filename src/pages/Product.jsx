@@ -5,7 +5,8 @@ import { money, WHATSAPP } from "../lib/format.js";
 import { useCart } from "../lib/cart.jsx";
 import { useProducts } from "../lib/useProducts.js";
 import ProductCard, { ProductImage } from "../components/ProductCard.jsx";
-import { Ornament, Plus, Minus } from "../components/Icons.jsx";
+import { Ornament, Plus, Minus, Heart } from "../components/Icons.jsx";
+import { useAccount } from "../lib/account.jsx";
 
 export default function Product() {
   const { id } = useParams();
@@ -15,6 +16,7 @@ export default function Product() {
   const [qty, setQty] = useState(1);
   const { add } = useCart();
   const { products } = useProducts();
+  const { isWished, toggleWish } = useAccount();
 
   useEffect(() => {
     setP(null); setActive(0); setQty(1);
@@ -63,6 +65,9 @@ export default function Product() {
               <button className="btn btn--gold btn--grow" onClick={() => add(p, qty)}>Add to bag</button>
             </div>
           )}
+          <button className={`btn btn--ghost-dark btn--block wish-btn ${isWished(p.id) ? "on" : ""}`} onClick={() => toggleWish(p.id)}>
+            <Heart size={16} filled={isWished(p.id)} /> {isWished(p.id) ? "Saved to wishlist" : "Save to wishlist"}
+          </button>
           {wa && <a className="btn btn--ghost-dark btn--block" href={wa} target="_blank" rel="noreferrer">Enquire on WhatsApp</a>}
           <ul className="pdp__notes"><li>Hand-finished by our artisans</li><li>Gift-ready keepsake packaging</li><li>Secure, tracked delivery</li></ul>
         </div>
